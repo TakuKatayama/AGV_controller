@@ -198,3 +198,7 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+## Build
+add_executable(agv-controller-test src/main.cpp)
+target_link_libraries(agv-controller-test ${catkin_LIBRARIES})
