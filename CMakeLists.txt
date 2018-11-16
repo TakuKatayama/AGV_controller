@@ -205,3 +205,6 @@ target_link_libraries(pcl_converter ${catkin_LIBRARIES})
 
 add_executable(floor_detection src/fd.cpp)
 target_link_libraries(floor_detection ${catkin_LIBRARIES})
+
+add_executable(msg_converter src/msg2Mat.cpp)
+target_link_libraries(msg_converter ${catkin_LIBRARIES})
