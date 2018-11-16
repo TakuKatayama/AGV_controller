@@ -200,5 +200,8 @@ include_directories(
 # catkin_add_nosetests(test)
 
 ## Build
-add_executable(agv-controller-test src/main.cpp)
-target_link_libraries(agv-controller-test ${catkin_LIBRARIES})
+add_executable(pcl_converter src/main.cpp)
+target_link_libraries(pcl_converter ${catkin_LIBRARIES})
+
+add_executable(floor_detection src/fd.cpp)
+target_link_libraries(floor_detection ${catkin_LIBRARIES})
