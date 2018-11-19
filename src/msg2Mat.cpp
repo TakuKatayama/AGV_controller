@@ -12,17 +12,29 @@ void cb(const sensor_msgs::ImageConstPtr& msg)
 {
     cv_bridge::CvImagePtr cv_ptr;
     cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::TYPE_32FC1);
-    cv::Mat image = cv_ptr->image;
+    cv::Mat msgmat = cv_ptr->image;
+    cv::Mat floor = cv::Mat::zeros(msgmat.rows, msgmat.cols, CV_8U);
 
-    cv::imshow("image", image);
-    cv::waitKey(3);
+    for(int v = 0; v < msgmat.cols; v++)
+    {
+        for(int u = 0; u < msgmat.rows; u++)
+        {
+            double y = msgmat.ptr<double>(u)[v] * 1;
+            if (y < 0.5)
+            {
+                floor.ptr<uchar>(u)[v] = 128;
+            }
+        }
+    }    
 
-    pub.publish(cv_ptr->toImageMsg()); 
+    sensor_msgs::ImagePtr pub_ptr = cv_bridge::CvImage(std_msgs::Header(), sensor_msgs::image_encodings::MONO8, floor).toImageMsg();
+
+    pub.publish(pub_ptr); 
 }
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "mat_converter");
+    ros::init(argc, argv, "floor_detecter");
     ros::NodeHandle n;
 
     ros::Subscriber sub = n.subscribe ("/zed/depth/depth_registered", 1, cb);
