@@ -12,11 +12,14 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_ros
   roscpp
   sensor_msgs
+  image_transport
+  cv_bridge
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-
+find_package(OpenCV REQUIRED)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -207,4 +210,4 @@ add_executable(floor_detection src/fd.cpp)
 target_link_libraries(floor_detection ${catkin_LIBRARIES})
 
 add_executable(msg_converter src/msg2Mat.cpp)
-target_link_libraries(msg_converter ${catkin_LIBRARIES})
+target_link_libraries(msg_converter ${OpenCV_LIBS} ${catkin_LIBRARIES})

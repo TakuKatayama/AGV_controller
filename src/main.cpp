@@ -8,9 +8,9 @@ ros::Publisher pub;
 
 void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& input)
 {
-   sensor_msgs::PointCloud2 output = *input;
+    sensor_msgs::PointCloud2 output = *input;
    
-   pub.publish(output); 
+    pub.publish(output); 
 }
 
 int main(int argc, char** argv)
