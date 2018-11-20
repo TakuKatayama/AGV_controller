@@ -15,7 +15,6 @@ void cb(const sensor_msgs::ImageConstPtr& msg)
     cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::TYPE_32FC1);
     int width = cv_ptr->image.cols;
     int height = cv_ptr->image.rows;
-    //cv::Mat depth_map = cv_ptr->image;
     cv_bridge::CvImagePtr floor_ptr;
     cv::Mat floor(cv::Size(width, height), CV_8UC1);
 
@@ -29,15 +28,17 @@ void cb(const sensor_msgs::ImageConstPtr& msg)
     {
         for(int u = 0; u < width; u++)
         {
-            z = cv_ptr->image.at<float>(v, u);
+            z = cv_ptr->image.ptr<float>(v)[u];
             y = z * (u_center - v) / fku_l_vga;
             if (y < -0.38) {
-                floor.at<unsigned char>(v, u) = 255;
+                floor.ptr<unsigned char>(v)[u] = 255;
             }
             else if (std::isnan(z) || std::isinf(z)){
-                floor.at<unsigned char>(v, u) = 128;
+                floor.ptr<unsigned char>(v)[u] = 128;
             }
-            else {floor.at<unsigned char>(v, u) = 0;}
+            else {
+                floor.ptr<unsigned char>(v)[u] = 0;
+            }
         }
     }    
 
@@ -51,7 +52,7 @@ int main(int argc, char** argv)
     ros::NodeHandle n;
 
     ros::Subscriber sub = n.subscribe ("/zed/depth/depth_registered", 1, cb);
-    pub = n.advertise<sensor_msgs::Image> ("/agv/image/mat", 1);
+    pub = n.advertise<sensor_msgs::Image> ("/agv/image/floor", 1);
 
     ros::spin();
     return 0;
