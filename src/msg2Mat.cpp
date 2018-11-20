@@ -29,17 +29,20 @@ void cb(const sensor_msgs::ImageConstPtr& msg)
     {
         for(int u = 0; u < width; u++)
         {
-            z = cv_ptr->image.data[u + v * height];
+            z = cv_ptr->image.at<float>(v, u);
             y = z * (u_center - v) / fku_l_vga;
-            if (y < 0) {floor.at<unsigned char>(v, u) = 100;}
+            if (y < -0.38) {
+                floor.at<unsigned char>(v, u) = 255;
+            }
+            else if (std::isnan(z) || std::isinf(z)){
+                floor.at<unsigned char>(v, u) = 128;
+            }
             else {floor.at<unsigned char>(v, u) = 0;}
         }
     }    
 
-    cv::imshow("y", floor);
-    cv::waitKey(3);
     sensor_msgs::ImagePtr pub_ptr = cv_bridge::CvImage(std_msgs::Header(), sensor_msgs::image_encodings::TYPE_8UC1, floor).toImageMsg();
-    pub.publish(cv_ptr->toImageMsg()); 
+    pub.publish(pub_ptr); 
 }
 
 int main(int argc, char** argv)
