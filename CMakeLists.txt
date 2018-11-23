@@ -211,3 +211,6 @@ target_link_libraries(floor_detection ${catkin_LIBRARIES})
 
 add_executable(msg_converter src/msg2Mat.cpp)
 target_link_libraries(msg_converter ${OpenCV_LIBS} ${catkin_LIBRARIES})
+
+add_executable(feature_point_detect src/feature_point_detecter.cpp)
+target_link_libraries(feature_point_detect ${OpenCV_LIBS} ${catkin_LIBRARIES})

@@ -13,38 +13,54 @@ void cb(const sensor_msgs::ImageConstPtr& msg)
 {
     cv_bridge::CvImagePtr floor_ptr;
     floor_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::TYPE_8UC1);
-    int width = cv_ptr->image.cols;
-    int height = cv_ptr->image.rows;
-    cv_bridge::CvImagePtr floor_ptr;
-    cv::Mat feature_point(cv::Size(width, height), CV_8UC1);
-
-    double y = 0;
-    double z = 0;
-    
-    int v_center = height / 2;
-    int u_center = width / 2;
+    int width = floor_ptr->image.cols;
+    int height = floor_ptr->image.rows;
+    cv::Mat feature_point = cv::Mat::zeros(cv::Size(width, height), CV_8UC1);
 
     int u = 0;
-    int v = height - 1;
+    int v = 0;
+    
+    int left_feature_index;
+    int right_feature_index;
 
-    while(u == width)
+    std::vector<cv::Point> left_feature;
+    std::vector<cv::Point> right_feature;
+
+    while(v == height - 1)
     {
-        while(feature_point.ptr<unsigned char>(u)[v] != 255)
+        while(feature_point.ptr<unsigned char>(v)[u] == 255 || u == width - 1)
         {
             u++;
         }
-    }
-
-    for(int u = 0; u < width; u++)
-    {
-        for(int v = height; v <= 0; v--)
+        if(u != width - 1)
         {
-            if (feature_point.ptr<unsigned char>(v)[u] != 255)
-            int minYIdx = feature_point.ptr<unsigned char>(v)[u]
+            left_feature_index = u;
+            u = width - 1;
+
+            while(feature_point.ptr<unsigned char>(v)[u] == 255 || u == 0)
+            {
+                u--;
+            }
+            right_feature_index = u;
+
+        }else
+        {
+            left_feature_index = 0;
+            right_feature_index = 0;
         }
+        left_feature.push_back(cv::Point(left_feature_index, v));
+        right_feature.push_back(cv::Point(right_feature_index, v));
+        v++;
+        u = 0;
     }
 
-    sensor_msgs::ImagePtr pub_ptr = cv_bridge::CvImage(std_msgs::Header(), sensor_msgs::image_encodings::TYPE_8UC1, feature_point).toImageMsg();
+    for(int i = 0; i < left_feature.size(); i++)
+    {
+        cv::circle(feature_point, left_feature[i], 20, cv::Scalar(0,200,0), -1, CV_AA);
+        cv::circle(feature_point, right_feature[i], 20, cv::Scalar(200,0,0), -1, CV_AA);
+    }
+
+    sensor_msgs::ImagePtr pub_ptr = cv_bridge::CvImage(std_msgs::Header(), sensor_msgs::image_encodings::BGR8, feature_point).toImageMsg();
     pub.publish(pub_ptr); 
 }
 
