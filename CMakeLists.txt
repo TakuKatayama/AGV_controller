@@ -214,3 +214,6 @@ target_link_libraries(msg_converter ${OpenCV_LIBS} ${catkin_LIBRARIES})
 
 add_executable(feature_point_detect src/feature_point_detecter.cpp)
 target_link_libraries(feature_point_detect ${OpenCV_LIBS} ${catkin_LIBRARIES})
+
+add_executable(test_node src/test.cpp)
+target_link_libraries(test_node ${OpenCV_LIBS} ${catkin_LIBRARIES})

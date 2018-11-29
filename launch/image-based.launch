@@ -1,4 +1,5 @@
 <launch>
     <node pkg="agv-controller" name="msg_converter" type="msg_converter" />
     <node pkg="agv-controller" name="feature_point_detect" type="feature_point_detect" />
+    <node pkg="agv-controller" name="test_node" type="test_node" />
 </launch>
