@@ -20,39 +20,52 @@ void cb(const sensor_msgs::ImageConstPtr& msg)
     int u = 0;
     int v = 0;
     
-    int left_feature_index;
-    int right_feature_index;
+    int left_feature_index = 0;
+    int right_feature_index = 0;
+    int center_index = 0;
 
-    std::vector<cv::Point> left_feature;
-    std::vector<cv::Point> right_feature;
+    std::vector<cv::Point2d> left_feature;
+    std::vector<cv::Point2d> right_feature;
+    std::vector<cv::Point2d> center_feature;
 
-    while(v == height - 1)
+    bool flg1 = false;
+    bool flg2 = false;
+
+    // 両端の端からのindexを取得する処理
+    for(int v = 0; v < height; v++)
     {
-        while(feature_point.ptr<unsigned char>(v)[u] == 255 || u == width - 1)
+        // 左から |-->
+        for(int u = 0; u < width; u++)
         {
-            u++;
-        }
-        if(u != width - 1)
-        {
-            left_feature_index = u;
-            u = width - 1;
-
-            while(feature_point.ptr<unsigned char>(v)[u] == 255 || u == 0)
+            if(floor_ptr->image.ptr<unsigned char>(v)[u] == 200 && !flg1)
             {
-                u--;
+                left_feature.push_back(cv::Point2d(u, v));
+                flg1 = true;
+                left_feature_index = u;
             }
-            right_feature_index = u;
-
-        }else
-        {
-            left_feature_index = 0;
-            right_feature_index = 0;
         }
-        left_feature.push_back(cv::Point(left_feature_index, v));
-        right_feature.push_back(cv::Point(right_feature_index, v));
-        v++;
-        u = 0;
+
+        // 右から <--|
+        for(int u = width; u >= 0; u--)
+        {
+            if(floor_ptr->image.ptr<unsigned char>(v)[u] == 200 && !flg2)
+            {
+                right_feature.push_back(cv::Point2d(u, v));
+                flg2 = true;
+                right_feature_index = u;
+            }
+        }
+        if(left_feature_index != 0 && right_feature_index != 0){
+            center = ( right_feature_index + left_feature_index ) / 2;
+            center_feature.push_back(cv::Point2d(center, v));
+        }
+
+        left_feature_index = 0;
+        right_feature_index = 0;
+        first_flg = false;
+        second_flg = false;
     }
+
 
     for(int i = 0; i < left_feature.size(); i++)
     {
